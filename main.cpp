@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <list>
 
 using namespace std;
 
@@ -14,11 +15,8 @@ void Task1() {
     };
                 
     vector<Student> students = { {"Иванов Пётр", 4.2, 0}, {"Петрова Мария", 4.5, 0}, {"Сергеев Михаил", 3.5, 3}, {"Черных Игорь", 3.1, 2}, {"Иванова Елена", 4.0, 1}, 
-                                 {"Черных Владислав", 2.5, 5}, {"Смирнов Иннокентий", 3.6, 1}, {"Козловская Алина", 5.0, 0}, {"Шишкин Сергей", 4.47, 0} , {"Кузнецов Сергей", 3.0, 2} };
+    {"Черных Владислав", 2.5, 5}, {"Смирнов Иннокентий", 3.6, 1}, {"Козловская Алина", 5.0, 0}, {"Шишкин Сергей", 4.47, 0} , {"Кузнецов Сергей", 3.0, 2} };
 
-    /*for (auto n : students){
-        cout << n.name << " " << n.average_score << " " << n.debts << endl;
-    }*/
 
     sort(students.begin(), students.end(), [](const Student& a, const Student& b){
 
@@ -40,7 +38,36 @@ void Task1() {
 }
 
 void Task2() {
+    cout << "Задача 2" << endl;
 
+    struct Exam {
+        string subject;
+        int grade;
+    };
+
+    list<Exam> exams = { {"Математический анализ", 2}, {"Информатика", 3}, {"Иностранный язык", 5}, {"История России", 5}, {"Линейная алгебра", 2}, 
+    {"Основы личностной и коммуникативной культуры", 4}, {"Основы проектной деятельности", 2}, {"Основыы российской государственности", 5}, 
+    {"Учебная практика: ознакомительаня практкика", 5} };
+
+    list<Exam> result(exams.size());
+    string mercy = " (преподаватель сжалился)";
+
+    transform(exams.begin(), exams.end(), result.begin(), [mercy](const Exam& exam) {
+        if (exam.grade == 2)
+        {
+            return Exam{exam.subject + mercy, 3};
+        }
+        else
+        {
+            return exam;
+        }
+    });
+
+    for (auto n : result)
+    {
+        cout << n.subject << ", оценка: " << n.grade << endl;
+    }
+    cout << endl;
 }
 
 void Task3() {
