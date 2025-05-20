@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <vector>
 #include <list>
+#include <deque>
+#include <random>
 
 using namespace std;
 
@@ -63,6 +65,7 @@ void Task2() {
         }
     });
 
+    cout << "Итоговый список оценок: " << endl;
     for (auto n : result)
     {
         cout << n.subject << ", оценка: " << n.grade << endl;
@@ -71,7 +74,18 @@ void Task2() {
 }
 
 void Task3() {
+    cout << "Задача 3";
 
+    struct Student
+    {
+        string name;
+        time_t arrival_time;
+    };
+
+    deque<Student> students = { {"Миша", 1747729800}, {"Настя", 1747735140}, {"Глеб", 1747741620}, {"Коля", 1747747860}, 
+    {"Ксюша", 1747773060}, {"Андрей", 1747735200}, {"Артур", 1747729020}, {"Илья", 1747736040}, {"Арсений", 1747745040}, {"Ричард", 1747746180} };
+    
+    
 }
 
 void Task4() {
@@ -103,7 +117,7 @@ void Task10() {
 }
 
 int main() {
-
+    srand(time(NULL));
 
     while (true)
     {
