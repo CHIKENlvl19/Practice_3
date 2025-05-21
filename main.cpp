@@ -20,12 +20,13 @@ void Task1() {
     {"Черных Владислав", 2.5, 5}, {"Смирнов Иннокентий", 3.6, 1}, {"Козловская Алина", 5.0, 0}, {"Шишкин Сергей", 4.47, 0} , {"Кузнецов Сергей", 3.0, 2} };
 
 
-    sort(students.begin(), students.end(), [](const Student& a, const Student& b){
+    sort(students.begin(), students.end(), 
+        [](const Student& a, const Student& b){
 
-        if (a.debts == b.debts)
-        {
-            return a.average_score < b.average_score;
-        }
+            if (a.debts == b.debts)
+            {
+                return a.average_score < b.average_score;
+            }
 
         return a.debts > b.debts;
     });
@@ -54,15 +55,16 @@ void Task2() {
     list<Exam> result(exams.size());
     string mercy = " (преподаватель сжалился)";
 
-    transform(exams.begin(), exams.end(), result.begin(), [mercy](const Exam& exam) {
-        if (exam.grade == 2)
-        {
-            return Exam{exam.subject + mercy, 3};
-        }
-        else
-        {
-            return exam;
-        }
+    transform(exams.begin(), exams.end(), result.begin(), 
+        [mercy](const Exam& exam) {
+            if (exam.grade == 2)
+            {
+                return Exam{exam.subject + mercy, 3};
+            }
+            else
+            {
+                return exam;
+            }
     });
 
     cout << "Итоговый список оценок: " << endl;
@@ -82,10 +84,17 @@ void Task3() {
         time_t arrival_time;
     };
 
-    deque<Student> students = { {"Миша", 1747729800}, {"Настя", 1747735140}, {"Глеб", 1747741620}, {"Коля", 1747747860}, 
-    {"Ксюша", 1747773060}, {"Андрей", 1747735200}, {"Артур", 1747729020}, {"Илья", 1747736040}, {"Арсений", 1747745040}, {"Ричард", 1747746180} };
+    deque<Student> students = { {"Миша", 30600}, {"Настя", 35940}, {"Глеб", 42420}, {"Коля", 48660}, 
+    {"Ксюша", 73860}, {"Андрей", 36000}, {"Артур", 29820}, {"Илья", 36840}, {"Арсений", 45840}, {"Ричард", 46980} };
     
+    deque<Student> result(students.size());
+    const time_t deadline = 360000;
     
+    copy_if(students.begin(), students.end(), result.begin(), 
+        [](const Student& student) {
+
+    });
+
 }
 
 void Task4() {
