@@ -4,6 +4,7 @@
 #include <list>
 #include <deque>
 #include <random>
+#include <iomanip>
 
 using namespace std;
 
@@ -76,7 +77,7 @@ void Task2() {
 }
 
 void Task3() {
-    cout << "Задача 3";
+    cout << "Задача 3" << endl;
 
     struct Student
     {
@@ -85,16 +86,29 @@ void Task3() {
     };
 
     deque<Student> students = { {"Миша", 30600}, {"Настя", 35940}, {"Глеб", 42420}, {"Коля", 48660}, 
-    {"Ксюша", 73860}, {"Андрей", 36000}, {"Артур", 29820}, {"Илья", 36840}, {"Арсений", 45840}, {"Ричард", 46980} };
+    {"Ксюша", 34800}, {"Андрей", 36000}, {"Артур", 29820}, {"Илья", 36840}, {"Арсений", 45840}, {"Ричард", 46980} };
     
-    deque<Student> result(students.size());
-    const time_t deadline = 360000;
+    deque<Student> result;
+    const time_t deadline = 36000;
     
-    copy_if(students.begin(), students.end(), result.begin(), 
-        [](const Student& student) {
-
+    copy_if(students.begin(), students.end(), back_inserter(result), 
+        [deadline](const Student& student) {
+            return student.arrival_time < deadline;
     });
 
+    int barmaid_guess = rand() % 5 + 1;
+    for (auto n : result)
+    {
+        int student_guess = rand() % 5 + 1;
+        if (student_guess == barmaid_guess)
+        {
+            n.name += " (выиграл бесплатную булочку!)";
+        }
+
+        cout << n.name << ", время прибытия: " << n.arrival_time / 3600 << ":"
+             << setfill('0') << setw(2) <<(n.arrival_time % 3600) / 60 << endl;
+    }
+    cout << endl;
 }
 
 void Task4() {
@@ -138,10 +152,13 @@ int main() {
         {
             case 1:
                 Task1();
+                continue;
             case 2:
                 Task2();
+                continue;
             case 3:
                 Task3();
+                continue;
             case 4:
                 Task4();
             case 5:
