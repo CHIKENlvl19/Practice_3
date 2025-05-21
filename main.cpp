@@ -161,18 +161,25 @@ int main() {
                 continue;
             case 4:
                 Task4();
+                continue;
             case 5:
                 Task5();
+                continue;
             case 6:
                 Task6();
+                continue;
             case 7:
                 Task7();
+                continue;
             case 8:
                 Task8();
+                continue;
             case 9:
                 Task9();
+                continue;
             case 10:
                 Task10();
+                continue;
 
             /*default:
                 cout << "Неверный номер задачи, пропробуйте еще раз." << endl << "Номер задачи: ";*/
