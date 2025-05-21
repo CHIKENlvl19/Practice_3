@@ -4,6 +4,7 @@
 #include <list>
 #include <deque>
 #include <set>
+#include <forward_list>
 #include <random>
 #include <iomanip>
 
@@ -183,27 +184,70 @@ void Task4() {
 }
 
 void Task5() {
+    cout << "Задача 5." << endl;
 
+    struct Book {
+        string title;
+        string author;
+        int year;
+    };
+
+    forward_list<Book> books = { 
+        {"Clean Code: A Handbook of Agile Software Craftsmanship", "Роберт Мартин", 2008},
+        {"The Pragmatic Programmer: Your Journey To Mastery, 20th Anniversary Edition", "Эндрю Хант и Дэвид Томас", 2019},
+        {"You Don’t Know JS (book series)", "Кайл Симпсон", 2014},
+        {"Python Crash Course", "Эрик Маттес", 2015},
+        {"Eloquent JavaScript", "Марийн Хавербеке", 2018},
+        {"JavaScript: The Good Parts", "Дуглас Крокфорд", 2008},
+        {"Refactoring: Improving the Design of Existing Code", "Мартин Фаулер", 2018},
+        {"The Phoenix Project: A Novel About IT, DevOps, and Helping Your Business Win", "Джин Ким, Кевин Бехр, Джордж Спафорд", 2013},
+        {"The DevOps Handbook: How to Create World-Class Agility, Reliability, & Security in Technology Organizations", "Джин Ким, Патрик Дебois, Джон Уиллис, Джей Дейвис", 2016},
+        {"Artificial Intelligence: A Modern Approach", "Стюарт Рассел и Питер Норвиг", 2010},
+        {"The C Programming Language", "Брайан Керниган и Деннис Ритчи", 1988},
+        {"Code Complete", "Стив Макконнелл", 1993},
+        {"Design Patterns: Elements of Reusable Object-Oriented Software", "Эрих Гамма и др.", 1994},
+        {"The Mythical Man-Month: Essays on Software Engineering", "Фредерик Брукс", 1975},
+        {"Refactoring: Improving the Design of Existing Code", "Мартин Фаулер", 1999}
+    };
+
+    auto it = remove_if(books.begin(), books.end(), 
+        [](const Book& book) {
+            return book.year < 2000;
+        }
+    );
+    books.erase_after(it, books.end());
+
+    cout << "Актуальные книги по программированию: " << endl;
+    for (auto book : books)
+    {
+        if (book.title == "The C Programming Language")
+        {
+            cout << book.title << ", " << book.author << ", " << book.year << " - Эта книга - классика жанра!" << endl;
+            continue;
+        }
+        cout << book.title << ", " << book.author << ", " << book.year << " - Эта книга актуальна!" << endl;
+    }
+    cout << endl;
 }
 
 void Task6() {
-
+    cout << "Задача 6." << endl;
 }
 
 void Task7() {
-
+    cout << "Задача 7." << endl;
 }
 
 void Task8() {
-
+    cout << "Задача 8." << endl;
 }
 
 void Task9() {
-
+    cout << "Задача 9." << endl;
 }
 
 void Task10() {
-
+    cout << "Задача 10." << endl;
 }
 
 int main() {
