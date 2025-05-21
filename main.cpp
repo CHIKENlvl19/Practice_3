@@ -5,6 +5,9 @@
 #include <deque>
 #include <set>
 #include <forward_list>
+#include <array>
+#include <unordered_set>
+#include <numeric>
 #include <random>
 #include <iomanip>
 
@@ -232,10 +235,43 @@ void Task5() {
 
 void Task6() {
     cout << "Задача 6." << endl;
+
+    array<int, 30> examination_cards;
+    unordered_set<int> used_card_numbers;
+
+    generate(examination_cards.begin(), examination_cards.end(), 
+        [&used_card_numbers](){
+            int number;
+            do
+            {
+                number = rand() % 100 + 1;
+            } while (used_card_numbers.count(number) > 0);
+            used_card_numbers.insert(number);
+            return number;
+    });
+
+    cout << "Номера билетов: " << endl;
+    for(auto card : examination_cards)
+    {
+        if (card == 42)
+        {
+            cout << "Билет с номером 42 - счастивый. Как зовут преподавателя?" << endl;
+            continue;
+        }
+        cout << card << endl;
+    }
+    cout << endl;
 }
 
 void Task7() {
     cout << "Задача 7." << endl;
+
+    struct Attendance {
+        string name;
+        string date;
+        int absent_count;
+    };
+    
 }
 
 void Task8() {
