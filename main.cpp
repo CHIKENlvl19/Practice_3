@@ -7,6 +7,7 @@
 #include <forward_list>
 #include <array>
 #include <unordered_set>
+#include <unordered_map>
 #include <map>
 #include <numeric>
 #include <random>
@@ -296,15 +297,95 @@ void Task7() {
         });
 
     cout << "Всего пропусков у студента в первом семестре: " << total_skips << endl;
+    if (total_skips > 20)
+    {
+        cout << "Студенту необходимо явиться в деканат в течении трех рабочих дней для выяснения причин пропусков." << endl;
+    }
 
 }
 
 void Task8() {
     cout << "Задача 8." << endl;
+
+    struct Homework {
+        string topic;
+        int points;
+        string code;
+    };
+
+    unordered_map<int, Homework> homeworks = {
+        {482, {"Сортировка", 8, "void sort(int* arr, int size) { ... }"}},
+        {157, {"Графы", 7, "struct Node { int data; };"}},
+        {639, {"ООП", 9, "class Student { ... };"}},
+        {274, {"Списки", 6, "struct List { ... };"}},
+        {805, {"Файлы", 5, "struct FileHandler { ... };"}},
+        {391, {"Алгоритмы", 8, "int binarySearch(int arr[], ... }"}},
+        {526, {"Шаблоны", 9, "template<typename T> struct Vector { ... };"}},
+        {748, {"Сети", 4, "void sendPacket(Packet p) { ... }"}},
+        {913, {"Базы данных", 7, "struct Query { string sql; };"}},
+        {164, {"Математика", 10, "double integrate(...) { ... }"}}
+    };
+
+    for_each(homeworks.begin(), homeworks.end(), 
+        [](auto& pair){
+            if(pair.second.code.find("struct") != string::npos)
+            {
+                if (pair.second.points < 10)
+                {
+                    pair.second.points += 1;
+                }
+            }
+        });
+
+    for (auto n : homeworks)
+    {
+        cout << "Студент под ID " << n.first << " с темой работы " << n.second.topic << " получил " << n.second.points << " баллов." << endl;
+    }
+    cout << endl;
 }
 
 void Task9() {
     cout << "Задача 9." << endl;
+
+    struct LabWork {
+        string title;
+        string author_name;
+        int difficulty;
+
+        bool operator < (const LabWork& other) const {
+            return difficulty < other.difficulty;
+        }
+    };
+
+    multiset<LabWork> labWorks = {
+        {"Измерение ускорения свободного падения", "Иван", 5},
+        {"Исследование закона сохранения энергии", "Сергей",  7},
+        {"Определение плотности вещества", "Мария", 4},
+        {"Изучение колебаний маятника", "Павел", 6},
+        {"Измерение силы трения", "Ксения", 3},
+        {"Исследование законов Ньютона", "Алексей", 3},
+        {"Изучение электромагнитных волн", "Ирина", 9},
+        {"Определение коэффициента упругости", "Владислав", 6},
+        {"Изучение теплопередачи", "Вера", 5},
+        {"Исследование оптики", "Александр", 7}
+    };
+
+    auto it = adjacent_find(labWorks.begin(), labWorks.end(), 
+        [](const LabWork& a, const LabWork& b){
+            return a.difficulty == b.difficulty;
+        });
+
+    if (it != labWorks.end())
+    {
+        auto next_it = next(it);
+        cout << "Работы студентов " << it->author_name << " и " << next_it->author_name << " имеют одинаковую сложность. " << "(" << it->difficulty << ")" << endl;
+        cout << "Оба получают дополнительные вопросы на защите." << endl;
+    }
+    else
+    {
+        cout << "Одинаковых по сложности работ нет." << endl;
+    }
+    cout << endl;
 }
 
 void Task10() {
