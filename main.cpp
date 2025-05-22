@@ -7,6 +7,7 @@
 #include <forward_list>
 #include <array>
 #include <unordered_set>
+#include <map>
 #include <numeric>
 #include <random>
 #include <iomanip>
@@ -267,11 +268,35 @@ void Task7() {
     cout << "Задача 7." << endl;
 
     struct Attendance {
-        string name;
         string date;
         int absent_count;
     };
     
+    map<string, Attendance> students_attendance = { 
+        {"Матанализ", {"01.09.2023", 3}},
+        {"Матанализ", {"01.09.2024", 1}},
+        {"Иностранный язык", {"01.09.2023", 5}},
+        {"Основы проектной деятельности", {"10.02.2024", 1}},
+        {"Программирование", {"10.02.2024", 0}},
+        {"Информатика", {"01.09.2023", 10}},
+        {"Линейная алгебра", {"01.09.2023", 2}},
+        {"Физика", {"10.02.2024", 1}},
+        {"Теория вероятности и математическая статистика", {"10.02.2024", 12}},
+        {"Основы личностной и коммуникативной культуры", {"01.09.2023", 0}},
+        {"Основы российской государственности", {"01.09.2023", 15}}
+    };
+
+    int total_skips = accumulate(students_attendance.begin(), students_attendance.end(), 0, 
+        [](int total, const pair<string, Attendance>& attendance) {
+            if (attendance.second.date == "01.09.2023")
+            {
+                return total + attendance.second.absent_count;
+            }
+            return total;
+        });
+
+    cout << "Всего пропусков у студента в первом семестре: " << total_skips << endl;
+
 }
 
 void Task8() {
