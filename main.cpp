@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <map>
 #include <numeric>
+#include <sstream>
 #include <random>
 #include <iomanip>
 
@@ -301,7 +302,7 @@ void Task7() {
     {
         cout << "Студенту необходимо явиться в деканат в течении трех рабочих дней для выяснения причин пропусков." << endl;
     }
-
+    cout << endl;
 }
 
 void Task8() {
@@ -390,6 +391,35 @@ void Task9() {
 
 void Task10() {
     cout << "Задача 10." << endl;
+
+    string serial_numbers = 
+    "SN2023,SN1999_SAFE,SN42,SN555_RECALL_CRITICAL,SN789,"
+    "SN1001_RECALL_URGENT,SN303,SN404_SAFE,SN505,SN606_RECALL,"
+    "SN707,SN808_SAFE,SN909";
+
+    vector<string> numbers;
+
+    stringstream ss(serial_numbers);
+    string token;
+    while (getline(ss, token, ','))
+    {
+        numbers.push_back(token);
+    }
+
+    bool isRecalled = any_of(numbers.begin(), numbers.end(), 
+        [](const string& number){
+            return number.find("RECALL") != string::npos;
+    });
+
+    if (isRecalled)
+    {
+        cout << "Партия имеет номера с RECALL. Срочно изъять партию!" << endl;
+    }
+    else
+    {
+        cout << "Партия в полном порядке. Можно приступить к продаже." << endl;
+    }
+    cout << endl;
 }
 
 int main() {
@@ -397,12 +427,14 @@ int main() {
 
     while (true)
     {
-        cout << "Введите номер задачи (от 1 до 10): ";
+        cout << "Введите номер задачи (от 1 до 10, 0 для выхода): ";
         int choice;
         cin >> choice;
 
         switch (choice)
         {
+            case 0:
+                exit(0);
             case 1:
                 Task1();
                 continue;
@@ -433,9 +465,6 @@ int main() {
             case 10:
                 Task10();
                 continue;
-
-            /*default:
-                cout << "Неверный номер задачи, пропробуйте еще раз." << endl << "Номер задачи: ";*/
         }
     }
 
