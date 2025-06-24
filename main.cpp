@@ -3,470 +3,423 @@
 #include <vector>
 #include <list>
 #include <deque>
-#include <set>
-#include <forward_list>
-#include <array>
-#include <unordered_set>
-#include <unordered_map>
 #include <map>
+#include <set>
 #include <numeric>
-#include <sstream>
+#include <string>
+#include <cctype>
+#include <cmath>
+#include <stack>
+#include <queue>
+#include <unordered_map>
+#include <functional>
+#include <array>
 #include <random>
-#include <iomanip>
 
 using namespace std;
 
+struct Ingredient {
+    string name;
+    int quantity;
+    bool is_magical;
+};
+
 void Task1() {
-    cout << "Задача 1." << endl;
-    
-    struct Student {
-        string name;
-        float average_score;
-        int debts;
+    cout << "\nЗадача 1. Гарри Поттер и зелье.\n";
+
+    vector<Ingredient> ingredients = {
+        {"mandrake", 3, true}, {"unicorn_hair", 1, true}, {"dragon_scale", 2, false}
     };
-                
-    vector<Student> students = { {"Иванов Пётр", 4.2, 0}, {"Петрова Мария", 4.5, 0}, {"Сергеев Михаил", 3.5, 3}, {"Черных Игорь", 3.1, 2}, {"Иванова Елена", 4.0, 1}, 
-    {"Черных Владислав", 2.5, 5}, {"Смирнов Иннокентий", 3.6, 1}, {"Козловская Алина", 5.0, 0}, {"Шишкин Сергей", 4.47, 0} , {"Кузнецов Сергей", 3.0, 2} };
+    
+    stable_sort(ingredients.begin(), ingredients.end(), 
+        [](const Ingredient& a, const Ingredient& b) {
+            if (a.is_magical != b.is_magical) return a.is_magical;
+            return a.quantity > b.quantity;
+        });
+    
+    transform(ingredients.begin(), ingredients.end(), ingredients.begin(),
+        [](Ingredient ing) {
+            transform(ing.name.begin(), ing.name.end(), ing.name.begin(), ::toupper);
+            return ing;
+        });
+    
+    int total_magical = accumulate(ingredients.begin(), ingredients.end(), 0,
+        [](int sum, const Ingredient& ing) {
+            return sum + (ing.is_magical ? ing.quantity : 0);
+        });
+    
+    cout << "Магические ингредиенты: " << total_magical << endl;
+    for (const auto& ing : ingredients)
+        cout << ing.name << " (" << ing.quantity << ", " 
+             << (ing.is_magical ? "магический" : "обычный") << ")\n";
 
-
-    sort(students.begin(), students.end(), 
-        [](const Student& a, const Student& b){
-
-            if (a.debts == b.debts)
-            {
-                return a.average_score < b.average_score;
-            }
-
-        return a.debts > b.debts;
-    });
-
-    cout << "Список студентов, отсортированный по количеству долгов:" << endl;
-        
-    for (auto n : students )
-    {
-        cout << n.name << ", " << n.debts << " долгов, средний балл: " << n.average_score << endl;
-    }
     cout << endl;
 }
+
+struct Friend {
+    string name;
+    int friendship_level;
+};
 
 void Task2() {
-    cout << "Задача 2." << endl;
+    cout << "\nЗадача 2. Шрек и общие друзья.\n";
 
-    struct Exam {
-        string subject;
-        int grade;
+    list<Friend> shrek_friends = {
+        {"Donkey", 8}, {"Fiona", 9}, {"Dragon", 7}
     };
+    list<Friend> donkey_friends = {
+        {"Dragon", 6}, {"Shrek", 10}, {"Fiona", 8}
+    };
+    
+    shrek_friends.reverse();
+    
+    set<string> shrek_set, donkey_set;
+    transform(shrek_friends.begin(), shrek_friends.end(), inserter(shrek_set, shrek_set.begin()),
+        [](const Friend& f) { return f.name; });
+    transform(donkey_friends.begin(), donkey_friends.end(), inserter(donkey_set, donkey_set.begin()),
+        [](const Friend& f) { return f.name; });
+    
+    vector<string> common;
+    set_intersection(shrek_set.begin(), shrek_set.end(), 
+                    donkey_set.begin(), donkey_set.end(),
+                    back_inserter(common));
+    
+    int total_level = 0;
+    for_each(shrek_friends.begin(), shrek_friends.end(),
+        [&](const Friend& f) {
+            if (count(common.begin(), common.end(), f.name))
+                total_level += f.friendship_level;
+        });
+    
+    cout << "Общие друзья: ";
+    for (const auto& name : common) cout << name << " ";
+    cout << "\nСуммарный уровень дружбы: " << total_level << endl;
 
-    list<Exam> exams = { {"Математический анализ", 2}, {"Информатика", 3}, {"Иностранный язык", 5}, {"История России", 5}, {"Линейная алгебра", 2}, 
-    {"Основы личностной и коммуникативной культуры", 4}, {"Основы проектной деятельности", 2}, {"Основыы российской государственности", 5}, 
-    {"Учебная практика: ознакомительаня практкика", 5} };
-
-    list<Exam> result(exams.size());
-    string mercy = " (преподаватель сжалился)";
-
-    transform(exams.begin(), exams.end(), result.begin(), 
-        [mercy](const Exam& exam) {
-            if (exam.grade == 2)
-            {
-                return Exam{exam.subject + mercy, 3};
-            }
-            else
-            {
-                return exam;
-            }
-    });
-
-    cout << "Итоговый список оценок: " << endl;
-    for (auto n : result)
-    {
-        cout << n.subject << ", оценка: " << n.grade << endl;
-    }
     cout << endl;
 }
+
+struct ReactorData {
+    string type;
+    double efficiency;
+};
 
 void Task3() {
-    cout << "Задача 3." << endl;
+    cout << "\nЗадача 3. Железный человек и реакторы.\n";
 
-    struct Student
-    {
-        string name;
-        time_t arrival_time;
+    map<string, vector<double>> reactors = {
+        {"Arc", {100.0, 150.0}},
+        {"Fusion", {200.0, 250.0}}
     };
-
-    deque<Student> students = { {"Миша", 30600}, {"Настя", 35940}, {"Глеб", 42420}, {"Коля", 48660}, 
-    {"Ксюша", 34800}, {"Андрей", 36000}, {"Артур", 29820}, {"Илья", 36840}, {"Арсений", 45840}, {"Ричард", 46980} };
     
-    deque<Student> result;
-    const time_t deadline = 36000;
-    
-    copy_if(students.begin(), students.end(), back_inserter(result), 
-        [deadline](const Student& student) {
-            return student.arrival_time < deadline;
-    });
-
-    int barmaid_guess = rand() % 5 + 1;
-    for (auto n : result)
-    {
-        int student_guess = rand() % 5 + 1;
-        if (student_guess == barmaid_guess)
-        {
-            n.name += " (выиграл бесплатную булочку!)";
-        }
-
-        cout << n.name << ", время прибытия: " << n.arrival_time / 3600 << ":"
-             << setfill('0') << setw(2) <<(n.arrival_time % 3600) / 60 << endl;
+    map<string, double> avg_efficiency;
+    for (auto& [type, values] : reactors) {
+        double sum = accumulate(values.begin(), values.end(), 0.0);
+        avg_efficiency[type] = sum / values.size();
     }
+    
+    vector<pair<string, double>> eff_pairs(avg_efficiency.begin(), avg_efficiency.end());
+    
+    sort(eff_pairs.begin(), eff_pairs.end(),
+        [](const auto& a, const auto& b) {
+            return b.second < a.second;
+        });
+    
+    auto max_it = max_element(eff_pairs.begin(), eff_pairs.end(),
+        [](const auto& a, const auto& b) {
+            return a.second < b.second;
+        });
+    
+    cout << "Реакторы по эффективности:\n";
+    for (const auto& [type, eff] : eff_pairs)
+        cout << type << ": " << eff << endl;
+    cout << "Наиболее эффективный: " << max_it->first << " (" << max_it->second << ")\n";
+
     cout << endl;
 }
+
+struct RoyalEvent {
+    string princess;
+    int attendance;
+};
 
 void Task4() {
-    cout << "Задача 4." << endl;
+    cout << "\nЗадача 4. Диснеевские принцессы и гласные в именах.\n";
 
-    struct Student {
-        string name;
-        vector <float> semester_grades;
-
-        bool operator<(const Student& other) const {
-            return name < other.name;
-        }
+    deque<RoyalEvent> events = {
+        {"Cinderella", 1000}, {"Aurora", 800}, {"Ariel", 1200}, {"Belle", 900}
     };
-
-    set<Student> students = {
-        {"Александр Невский", {4.5, 4.6, 4.7, 4.8, 4.5, 4.9, 4.6, 4.7}},
-        {"Алина Коваленко", {4.8, 4.7, 4.9, 4.6, 4.5, 4.8, 4.7, 4.9}},
-        {"Андрей Чернов", {4.0, 4.2, 4.1, 4.3, 4.4, 4.0, 4.2, 4.1}},
-        {"Анна Полякова", {4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5}},
-        {"Артём Лебедев", {4.6, 4.7, 4.8, 4.9, 4.7, 4.6, 4.8, 4.9}},
-        {"Валерия Соколова", {4.3, 4.4, 4.2, 4.5, 4.3, 4.4, 4.6, 4.2}}, 
-        {"Виктор Петров", {5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0}},
-        {"Глеб Морозов", {4.9, 4.8, 4.95, 4.85, 4.9, 4.95, 4.85, 4.9}},
-        {"Даниил Орлов", {4.1, 4.0, 4.3, 4.2, 4.4, 4.1, 4.0, 4.3}}, 
-        {"Дарья Кузнецова", {4.5, 4.6, 4.7, 4.8, 4.6, 4.5, 4.7, 4.8}},
-        {"Дмитрий Воробьев", {5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0}},
-        {"Евгения Волкова", {4.4, 4.5, 4.3, 4.6, 4.4, 4.5, 4.3, 4.6}},
-        {"Егор Семенов", {4.2, 4.0, 4.1, 4.3, 4.2, 4.0, 4.1, 4.3}}, 
-        {"Иван Кириллов", {4.7, 4.8, 4.75, 4.9, 4.7, 4.8, 4.75, 4.9}},
-        {"Кирилл Зайцев", {4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5}},
-        {"Ксения Белова", {4.6, 4.4, 4.55, 4.5, 4.6, 4.4, 4.55, 4.5}},
-        {"Лев Титов", {4.0, 4.1, 3.9, 4.2, 4.0, 4.1, 3.9, 4.2}},
-        {"Мария Игнатова", {4.8, 4.85, 4.9, 4.7, 4.8, 4.85, 4.9, 4.7}},
-        {"Максим Гришин", {4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5}},
-        {"Наталья Васнецова", {4.3, 4.35, 4.4, 4.5, 4.3, 4.35, 4.4, 4.5}},
-        {"Олег Степанов", {4.7, 4.6, 4.8, 4.9, 4.7, 4.6, 4.8, 4.9}},
-        {"Полина Медведева", {4.9, 4.95, 5.0, 4.8, 4.9, 4.95, 5.0, 4.8}},
-        {"Роман Козлов", {4.2, 4.3, 4.25, 4.4, 4.2, 4.3, 4.25, 4.4}}, 
-        {"Светлана Фомина", {4.5, 4.6, 4.55, 4.7, 4.5, 4.6, 4.55, 4.7}},
-        {"Сергей Баранов", {4.1, 4.0, 3.8, 4.2, 4.1, 4.0, 3.8, 4.2}}, 
-        {"София Жукова", {4.7, 4.75, 4.8, 4.85, 4.7, 4.75, 4.8, 4.85}},
-        {"Станислав Павлов", {4.4, 4.5, 4.3, 4.6, 4.4, 4.5, 4.3, 4.6}},
-        {"Татьяна Комарова", {4.6, 4.65, 4.7, 4.75, 4.6, 4.65, 4.7, 4.75}},
-        {"Фёдор Никитин", {4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5}},
-        {"Юлия Савельева", {4.8, 4.85, 4.9, 4.95, 4.8, 4.85, 4.9, 4.95}}
-    };
-
-    auto it = find_if(students.begin(), students.end(), 
-        [](const Student& s) {
-            return all_of(s.semester_grades.begin(), s.semester_grades.end(), [](float grade){
-                return grade >= 4.5;
-            });
-    });
     
-    if (it != students.end())
-    {
-        cout << "Идеальный студент найден: " << it->name << endl;
-        cout << "Оценки: ";
-        for (float grade : it->semester_grades)
-        {
-            cout << grade << " ";
-        }
-        cout << endl;
-    }
-    else
-    {
-        cout << "Идеальный студент не найден. Миф развеян!" << endl;
-    }
+    rotate(events.begin(), events.begin() + 2, events.end());
+    
+    unordered_map<char, bool> vowels = {{'A',1},{'E',1},{'I',1},{'O',1},{'U',1}};
+    vector<RoyalEvent> vowel_events;
+    copy_if(events.begin(), events.end(), back_inserter(vowel_events),
+        [&vowels](const RoyalEvent& e) {
+            return vowels[toupper(e.princess[0])];
+        });
+    
+    int total = accumulate(vowel_events.begin(), vowel_events.end(), 0,
+        [](int sum, const RoyalEvent& e) { return sum + e.attendance; });
+    
+    cout << "События с принцессами на гласную:\n";
+    for (const auto& e : vowel_events)
+        cout << e.princess << " (" << e.attendance << ")\n";
+    cout << "Общее посещение: " << total << endl;
 
-    cout << endl;
+    cout << endl;   
 }
+
+struct HoneyJar {
+    int weight;
+    string origin;
+};
 
 void Task5() {
-    cout << "Задача 5." << endl;
+    cout << "\nЗадача 5. Винни Пух и горшочки с мёдом.\n";
 
-    struct Book {
-        string title;
-        string author;
-        int year;
+    priority_queue<HoneyJar, vector<HoneyJar>, 
+        function<bool(const HoneyJar&, const HoneyJar&)>> 
+        jars([](const HoneyJar& a, const HoneyJar& b) {
+            return a.weight < b.weight;
+        });
+    
+    vector<HoneyJar> temp = {
+        {150, "Pine"}, {80, "Oak"}, {200, "Linden"}, {50, "Maple"}
     };
-
-    forward_list<Book> books = { 
-        {"Clean Code: A Handbook of Agile Software Craftsmanship", "Роберт Мартин", 2008},
-        {"The Pragmatic Programmer: Your Journey To Mastery, 20th Anniversary Edition", "Эндрю Хант и Дэвид Томас", 2019},
-        {"You Don’t Know JS (book series)", "Кайл Симпсон", 2014},
-        {"Python Crash Course", "Эрик Маттес", 2015},
-        {"Eloquent JavaScript", "Марийн Хавербеке", 2018},
-        {"JavaScript: The Good Parts", "Дуглас Крокфорд", 2008},
-        {"Refactoring: Improving the Design of Existing Code", "Мартин Фаулер", 2018},
-        {"The Phoenix Project: A Novel About IT, DevOps, and Helping Your Business Win", "Джин Ким, Кевин Бехр, Джордж Спафорд", 2013},
-        {"The DevOps Handbook: How to Create World-Class Agility, Reliability, & Security in Technology Organizations", "Джин Ким, Патрик Дебois, Джон Уиллис, Джей Дейвис", 2016},
-        {"Artificial Intelligence: A Modern Approach", "Стюарт Рассел и Питер Норвиг", 2010},
-        {"The C Programming Language", "Брайан Керниган и Деннис Ритчи", 1988},
-        {"Code Complete", "Стив Макконнелл", 1993},
-        {"Design Patterns: Elements of Reusable Object-Oriented Software", "Эрих Гамма и др.", 1994},
-        {"The Mythical Man-Month: Essays on Software Engineering", "Фредерик Брукс", 1975},
-        {"Refactoring: Improving the Design of Existing Code", "Мартин Фаулер", 1999}
-    };
-
-    auto it = remove_if(books.begin(), books.end(), 
-        [](const Book& book) {
-            return book.year < 2000;
-        }
-    );
-    books.erase_after(it, books.end());
-
-    cout << "Актуальные книги по программированию: " << endl;
-    for (auto book : books)
-    {
-        if (book.title == "The C Programming Language")
-        {
-            cout << book.title << ", " << book.author << ", " << book.year << " - Эта книга - классика жанра!" << endl;
-            continue;
-        }
-        cout << book.title << ", " << book.author << ", " << book.year << " - Эта книга актуальна!" << endl;
+    for (auto& jar : temp) jars.push(jar);
+    
+    vector<HoneyJar> remaining;
+    while (!jars.empty()) {
+        if (jars.top().weight >= 100)
+            remaining.push_back(jars.top());
+        jars.pop();
     }
+    
+    map<string, vector<HoneyJar>> grouped;
+    for (auto& jar : remaining)
+        grouped[jar.origin].push_back(jar);
+    
+    cout << "Оставшиеся горшки:\n";
+    for (auto& [origin, jars] : grouped) {
+        cout << origin << ":\n";
+        for (auto& jar : jars)
+            cout << "  " << jar.weight << "g\n";
+    }
+
     cout << endl;
 }
+
+struct Meal {
+    string food;
+    int calories;
+};
 
 void Task6() {
-    cout << "Задача 6." << endl;
+    cout << "\nЗадача 6. Маша и медведь: диета.\n";
 
-    array<int, 30> examination_cards;
-    unordered_set<int> used_card_numbers;
-
-    generate(examination_cards.begin(), examination_cards.end(), 
-        [&used_card_numbers](){
-            int number;
-            do
-            {
-                number = rand() % 100 + 1;
-            } while (used_card_numbers.count(number) > 0);
-            used_card_numbers.insert(number);
-            return number;
-    });
-
-    cout << "Номера билетов: " << endl;
-    for(auto card : examination_cards)
-    {
-        if (card == 42)
-        {
-            cout << "Билет с номером 42 - счастивый. Как зовут преподавателя?" << endl;
-            continue;
+    array<Meal, 7> meals = {{
+        {"Пирожное", 300}, {"Торт", 400}, {"cake", 400}, {"jam", 200}, 
+        {"jam", 200}, {"tea", 5}, {"tea", 5}
+    }};
+    
+    vector<Meal> result;
+    for (size_t i = 0; i < meals.size(); ++i) {
+        if (i < meals.size()-1 && meals[i].food == meals[i+1].food) {
+            result.push_back({"nothing", 0});
+            ++i; // Пропускаем следующий элемент
+        } else {
+            result.push_back(meals[i]);
         }
-        cout << card << endl;
     }
+    
+    sort(result.begin(), result.end(), 
+        [](const Meal& a, const Meal& b) {
+            return a.calories > b.calories;
+        });
+    
+    int total = accumulate(result.begin(), result.end(), 0,
+        [](int sum, const Meal& m) { return sum + m.calories; });
+    
+    cout << "Обновленное меню:\n";
+    for (const auto& m : result)
+        cout << m.food << " (" << m.calories << " ккал)\n";
+    cout << "Итого калорий: " << total << endl;
+
     cout << endl;
 }
+
+struct Artifact {
+    string name;
+    int weight;
+    bool is_dangerous;
+};
 
 void Task7() {
-    cout << "Задача 7." << endl;
+    cout << "\nЗадача 7. Хоббит и артефакты.\n";
 
-    struct Attendance {
-        string date;
-        int absent_count;
-    };
-    
-    map<string, Attendance> students_attendance = { 
-        {"Матанализ", {"01.09.2023", 3}},
-        {"Матанализ", {"01.09.2024", 1}},
-        {"Иностранный язык", {"01.09.2023", 5}},
-        {"Основы проектной деятельности", {"10.02.2024", 1}},
-        {"Программирование", {"10.02.2024", 0}},
-        {"Информатика", {"01.09.2023", 10}},
-        {"Линейная алгебра", {"01.09.2023", 2}},
-        {"Физика", {"10.02.2024", 1}},
-        {"Теория вероятности и математическая статистика", {"10.02.2024", 12}},
-        {"Основы личностной и коммуникативной культуры", {"01.09.2023", 0}},
-        {"Основы российской государственности", {"01.09.2023", 15}}
+    vector<Artifact> artifacts = {
+        {"Ring", 5, false}, {"Sword", 15, true}, {"Crown", 8, false}, 
+        {"Amulet", 20, true}, {"Book", 3, false}
     };
 
-    int total_skips = accumulate(students_attendance.begin(), students_attendance.end(), 0, 
-        [](int total, const pair<string, Attendance>& attendance) {
-            if (attendance.second.date == "01.09.2023")
-            {
-                return total + attendance.second.absent_count;
-            }
-            return total;
-        });
+    random_device rd;
+    mt19937 gen(rd());
+    shuffle(artifacts.begin(), artifacts.end(), gen);
 
-    cout << "Всего пропусков у студента в первом семестре: " << total_skips << endl;
-    if (total_skips > 20)
-    {
-        cout << "Студенту необходимо явиться в деканат в течении трех рабочих дней для выяснения причин пропусков." << endl;
-    }
+    auto it = partition(artifacts.begin(), artifacts.end(), 
+        [](const Artifact& a) { return a.weight > 10; });
+
+    vector<Artifact> dangerous(artifacts.begin(), it);
+    vector<Artifact> safe(it, artifacts.end());
+
+    map<bool, vector<string>> report;
+    for (const auto& a : dangerous) report[true].push_back(a.name);
+    for (const auto& a : safe) report[false].push_back(a.name);
+
+    int total = artifacts.size();
+    int dangerous_count = dangerous.size();
+    double danger_percent = (double)dangerous_count / total * 100;
+
+    cout << "Опасные артефакты (" << danger_percent << "%):\n";
+    for (const auto& name : report[true]) cout << "- " << name << endl;
+    cout << "Безопасные артефакты:\n";
+    for (const auto& name : report[false]) cout << "- " << name << endl;
+
     cout << endl;
 }
+
+struct HairMeasurement {
+    int length;
+    string date;
+};
 
 void Task8() {
-    cout << "Задача 8." << endl;
+    cout << "\nЗадача 8. Рапунцель и длина волос.\n";
 
-    struct Homework {
-        string topic;
-        int points;
-        string code;
+    list<HairMeasurement> measurements = {
+        {50, "2023-01-01"}, {120, "2023-02-01"}, {80, "2023-03-01"},
+        {200, "2023-04-01"}, {150, "2023-05-01"}
     };
-
-    unordered_map<int, Homework> homeworks = {
-        {482, {"Сортировка", 8, "void sort(int* arr, int size) { ... }"}},
-        {157, {"Графы", 7, "struct Node { int data; };"}},
-        {639, {"ООП", 9, "class Student { ... };"}},
-        {274, {"Списки", 6, "struct List { ... };"}},
-        {805, {"Файлы", 5, "struct FileHandler { ... };"}},
-        {391, {"Алгоритмы", 8, "int binarySearch(int arr[], ... }"}},
-        {526, {"Шаблоны", 9, "template<typename T> struct Vector { ... };"}},
-        {748, {"Сети", 4, "void sendPacket(Packet p) { ... }"}},
-        {913, {"Базы данных", 7, "struct Query { string sql; };"}},
-        {164, {"Математика", 10, "double integrate(...) { ... }"}}
-    };
-
-    for_each(homeworks.begin(), homeworks.end(), 
-        [](auto& pair){
-            if(pair.second.code.find("struct") != string::npos)
-            {
-                if (pair.second.points < 10)
-                {
-                    pair.second.points += 1;
-                }
-            }
+    
+    measurements.reverse();
+    
+    vector<pair<int, string>> color_map;
+    transform(measurements.begin(), measurements.end(), back_inserter(color_map),
+        [](const HairMeasurement& m) {
+            return make_pair(m.length, m.length < 100 ? "black" : "golden");
         });
+    
+    auto max_it = max_element(color_map.begin(), color_map.end(),
+        [](const pair<int,string>& a, const pair<int,string>& b) {
+            return a.first < b.first;
+        });
+    
+    double avg = accumulate(color_map.begin(), color_map.end(), 0.0,
+        [](double sum, const pair<int,string>& p) { return sum + p.first; }) 
+        / color_map.size();
+    
+    cout << "Цвет волос по длине:\n";
+    for (const auto& [len, color] : color_map)
+        cout << len << "cm -> " << color << endl;
+    cout << "Самая длинная прядь: " << max_it->first << "cm\n";
+    cout << "Средняя длина: " << avg << "cm\n";
 
-    for (auto n : homeworks)
-    {
-        cout << "Студент под ID " << n.first << " с темой работы " << n.second.topic << " получил " << n.second.points << " баллов." << endl;
-    }
     cout << endl;
 }
+
+struct Jedi {
+    string name;
+    int power;
+    int experience;
+};
 
 void Task9() {
-    cout << "Задача 9." << endl;
+    cout << "\nЗадача 9. Миссия Джедаев.\n";
 
-    struct LabWork {
-        string title;
-        string author_name;
-        int difficulty;
-
-        bool operator < (const LabWork& other) const {
-            return difficulty < other.difficulty;
+    multiset<Jedi, function<bool(const Jedi&, const Jedi&)>> jedi_set(
+        [](const Jedi& a, const Jedi& b) {
+            if (a.power != b.power) return a.power > b.power;
+            return a.experience > b.experience;
         }
+    );
+    
+    vector<Jedi> candidates = {
+        {"Yoda", 2000, 900}, {"Luke", 1200, 50}, {"Obi-Wan", 1500, 300},
+        {"Anakin", 1400, 20}, {"Mace Windu", 1300, 800}
     };
+    for (auto& j : candidates) jedi_set.insert(j);
+    
+    vector<Jedi> strong;
+    copy_if(jedi_set.begin(), jedi_set.end(), back_inserter(strong),
+        [](const Jedi& j) { return j.power > 1000; });
+    
+    partial_sort(strong.begin(), strong.begin() + min(5, (int)strong.size()), strong.end(),
+        [](const Jedi& a, const Jedi& b) { return a.name < b.name; });
+    
+    cout << "Сильные джедаи:\n";
+    for (const auto& j : strong)
+        cout << j.name << " (сила: " << j.power << ", опыт: " << j.experience << ")\n";
 
-    multiset<LabWork> labWorks = {
-        {"Измерение ускорения свободного падения", "Иван", 5},
-        {"Исследование закона сохранения энергии", "Сергей",  7},
-        {"Определение плотности вещества", "Мария", 4},
-        {"Изучение колебаний маятника", "Павел", 6},
-        {"Измерение силы трения", "Ксения", 3},
-        {"Исследование законов Ньютона", "Алексей", 3},
-        {"Изучение электромагнитных волн", "Ирина", 9},
-        {"Определение коэффициента упругости", "Владислав", 6},
-        {"Изучение теплопередачи", "Вера", 5},
-        {"Исследование оптики", "Александр", 7}
-    };
-
-    auto it = adjacent_find(labWorks.begin(), labWorks.end(), 
-        [](const LabWork& a, const LabWork& b){
-            return a.difficulty == b.difficulty;
-        });
-
-    if (it != labWorks.end())
-    {
-        auto next_it = next(it);
-        cout << "Работы студентов " << it->author_name << " и " << next_it->author_name << " имеют одинаковую сложность. " << "(" << it->difficulty << ")" << endl;
-        cout << "Оба получают дополнительные вопросы на защите." << endl;
-    }
-    else
-    {
-        cout << "Одинаковых по сложности работ нет." << endl;
-    }
     cout << endl;
 }
 
+struct Child {
+    string name;
+    bool arrived;
+};
+
 void Task10() {
-    cout << "Задача 10." << endl;
+    cout << "\nЗадача 10. Питер Пен и дети.\n";
 
-    string serial_numbers = 
-    "SN2023,SN1999_SAFE,SN42,SN555_RECALL_CRITICAL,SN789,"
-    "SN1001_RECALL_URGENT,SN303,SN404_SAFE,SN505,SN606_RECALL,"
-    "SN707,SN808_SAFE,SN909";
+    deque<Child> children = {
+        {"Wendy", false}, {"John", true}, {"Michael", true}, {"Tinker Bell", true}
+    };
 
-    vector<string> numbers;
+    for_each(children.begin(), children.end(), 
+        [](Child& c) {
+            if (c.name == "Peter Pan") c.arrived = true;
+        });
 
-    stringstream ss(serial_numbers);
-    string token;
-    while (getline(ss, token, ','))
-    {
-        numbers.push_back(token);
-    }
+    rotate(children.begin(), children.begin() + 1, children.end());
 
-    bool isRecalled = any_of(numbers.begin(), numbers.end(), 
-        [](const string& number){
-            return number.find("RECALL") != string::npos;
-    });
+    vector<Child> not_arrived;
+    copy_if(children.begin(), children.end(), back_inserter(not_arrived),
+        [](const Child& c) { return !c.arrived; });
 
-    if (isRecalled)
-    {
-        cout << "Партия имеет номера с RECALL. Срочно изъять партию!" << endl;
-    }
-    else
-    {
-        cout << "Партия в полном порядке. Можно приступить к продаже." << endl;
-    }
+    vector<string> missing;
+    transform(not_arrived.begin(), not_arrived.end(), back_inserter(missing),
+        [](const Child& c) { return c.name; });
+
+    map<bool, vector<string>> groups;
+    for (const auto& c : children)
+        groups[c.arrived].push_back(c.name);
+
+    cout << "Прилетели:\n";
+    for (const auto& name : groups[true]) cout << "- " << name << endl;
+    cout << "Не прилетели:\n";
+    for (const auto& name : groups[false]) cout << "- " << name << endl;
+
     cout << endl;
 }
 
 int main() {
-    srand(time(NULL));
-
-    while (true)
-    {
-        cout << "Введите номер задачи (от 1 до 10, 0 для выхода): ";
-        int choice;
+    int choice;
+    do {
+        cout << "Выберите задачу (1-10, 0 - выход): ";
         cin >> choice;
-
-        switch (choice)
-        {
-            case 0:
-                exit(0);
-            case 1:
-                Task1();
-                continue;
-            case 2:
-                Task2();
-                continue;
-            case 3:
-                Task3();
-                continue;
-            case 4:
-                Task4();
-                continue;
-            case 5:
-                Task5();
-                continue;
-            case 6:
-                Task6();
-                continue;
-            case 7:
-                Task7();
-                continue;
-            case 8:
-                Task8();
-                continue;
-            case 9:
-                Task9();
-                continue;
-            case 10:
-                Task10();
-                continue;
+        switch(choice) {
+            case 1: Task1(); break;
+            case 2: Task2(); break;
+            case 3: Task3(); break;
+            case 4: Task4(); break;
+            case 5: Task5(); break;
+            case 6: Task6(); break;
+            case 7: Task7(); break;
+            case 8: Task8(); break;
+            case 9: Task9(); break;
+            case 10: Task10(); break;
         }
-    }
-
+    } while(choice != 0);
+   
     return 0;
 }
